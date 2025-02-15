@@ -5,6 +5,7 @@ import com.saq.quizapp.dao.QuizDao;
 import com.saq.quizapp.model.Question;
 import com.saq.quizapp.model.QuestionWrapper;
 import com.saq.quizapp.model.Quiz;
+import com.saq.quizapp.model.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,5 +45,19 @@ public class QuizService {
             questionsForUser.add(questionWrapper);
         }
         return new ResponseEntity<>(questionsForUser, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Integer> calculateResult(Integer id, List<Response> responses) {
+        Quiz quiz = quizDao.findById(id).get();
+        int right = 0;
+        int i = 0;
+        List<Question> questions = quiz.getQuestions();
+        for (Response response: responses){
+            if (response.getResponse().equals(questions.get(i).getRightAnswer()))
+                right++;
+
+            i++;
+        }
+        return new ResponseEntity<>(right, HttpStatus.OK);
     }
 }
